@@ -7,10 +7,12 @@ import java.io.FileWriter
 /**
  * @author Q-YAA
  */
-object Main {
+object MainScala extends App {
 
-    def main(args: Array[String]) {
-        val parser = new Parser("knowledgeBase/knowledgeBase_0.txt")
+    override def main(args: Array[String]) {
+        //val fileName = "knowledgeBase/knowledgeBase_0.txt"
+        val fileName = args(0)
+        val parser = new Parser(fileName)
         val knowledgeBase = parser.parse
         val inferenceResult = knowledgeBase.reverseFuzzyInference()
 
