@@ -5,6 +5,11 @@ package lois.lab2.fuzzy
  */
 class Equation(val result: Float, val elements: List[(String, Float)]) {
 
+    def checkSolution(solution: Array[Float]) = {
+        val mins = for (i <- 0 until elements.size) yield math.min(elements(i)._2, solution(i))
+        mins.max == result
+    }
+
     override def toString: String = {
         val stringBuilder = new StringBuilder
         for (element <- elements) {

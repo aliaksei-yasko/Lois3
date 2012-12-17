@@ -7,7 +7,17 @@ package lois.lab2.fuzzy
  */
 class Matrix(array: Array[Array[Float]]) {
 
+    def this(h: Int, w: Int) = this(Array.ofDim[Float](h, w))
+
     val matrixData = array
+
+    def fill(value: Float) {
+        for (i <- 0 until matrixData.size) {
+            for (j <- 0 until matrixData(0).size) {
+                matrixData(i)(j) = value
+            }
+        }
+    }
 
     /**
      * Returns the value that placed in i row and j column.
@@ -26,6 +36,8 @@ class Matrix(array: Array[Array[Float]]) {
      */
     def getRow(i: Int): Array[Float] = matrixData(i)
 
+    def getColumn(i: Int): Array[Float] = (for (j <- 0 until matrixData.size) yield matrixData(j)(i)).toArray
+
     /**
      * Set the value in i row and j column.
      *
@@ -37,27 +49,7 @@ class Matrix(array: Array[Array[Float]]) {
         matrixData(i)(j) = value
     }
 
-    /**
-     * Calculates supremum for every matrix column.
-     *
-     * @return array of the calculated supremum values
-     */
-    def sup: Array[Float] = {
-        val supArray = Array.ofDim[Float](matrixData(0).length)
-
-        System.arraycopy(matrixData(0), 0, supArray, 0, supArray.length)
-
-        for (row <- matrixData) {
-            for (i <- 0 until supArray.length) {
-
-                if (supArray(i) < row(i)) {
-                    supArray(i) = row(i)
-                }
-            }
-        }
-
-        supArray
-    }
+    def inf: Array[Float] = (for (i <- 0 until matrixData(0).size) yield getColumn(i).min).toArray
 
     /**
      * Returns matrix width.
