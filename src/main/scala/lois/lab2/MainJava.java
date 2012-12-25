@@ -1,13 +1,14 @@
 package lois.lab2;
 
-import java.io.FileWriter;
-import java.io.IOException;
-
 import lois.lab2.fuzzy.EquationsSystem;
 import lois.lab2.fuzzy.KnowledgeBase;
 import lois.lab2.parser.Parser;
-import scala.Tuple2;
+import scala.Tuple3;
 import scala.collection.immutable.List;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author Q-YAA
@@ -15,17 +16,17 @@ import scala.collection.immutable.List;
 public class MainJava {
 
     public static void main(String[] args) throws IOException {
-        String fileName = "knowledgeBase/knowledgeBase_0.txt";
+        String fileName = "knowledgeBase/knowledgeBase_1.txt";
         //String fileName = args[0];
         Parser parser = new Parser(fileName);
         KnowledgeBase knowledgeBase = parser.parse();
-        Tuple2<EquationsSystem, float[]> inferenceResult = knowledgeBase.reverseFuzzyInference();
+        Tuple3<EquationsSystem, float[], ArrayList<float[]>> inferenceResult = knowledgeBase.reverseFuzzyInference();
 
-        printResults(inferenceResult._1(), inferenceResult._2(), knowledgeBase.reason());
+        printResults(inferenceResult._1(), inferenceResult._2(), inferenceResult._3(), knowledgeBase.reason());
     }
 
-    private static void printResults(EquationsSystem equationSystem, float[] solution, List<String> reason)
-        throws IOException {
+    private static void printResults(EquationsSystem equationSystem, float[] solution,
+                                     ArrayList<float[]> minSolutions, List<String> reason) throws IOException {
 
         FileWriter fileWriter = new FileWriter("output.txt");
 
@@ -33,7 +34,10 @@ public class MainJava {
         fileWriter.write(equationSystem.toString());
         fileWriter.write("\n\n--------------------------- Решение ---------------------\n\n");
         fileWriter.write(solutionToString(solution, reason));
-
+        fileWriter.write("\n\n--------------------------- Минимальные решения ---------------------\n\n");
+        for (float[] minSolution : minSolutions) {
+            fileWriter.write(solutionToString(minSolution, reason) + "\n");
+        }
         fileWriter.close();
     }
 
