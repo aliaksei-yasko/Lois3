@@ -92,12 +92,17 @@ class KnowledgeBase(val reason: List[String], val matrix: Matrix, val consequent
             }
         }
 
+        var contains = true
         for (x <- 0 until listOfZeros.length) {
             for (y <- 0 until listOfZeros.length) {
-                if ((listOfZeros.apply(x).contains(listOfZeros.apply(y)))
-                        && listOfZeros.apply(x) != -1 && listOfZeros.apply(y) != -1
-                        && x != y) {
-                    listOfZeros.update(y, "")
+                var contains = true
+                if (listOfZeros.apply(x) != -1 && listOfZeros.apply(y) != -1 && x != y) {
+                    for (z <- 0 until listOfZeros.apply(y).size) {
+                        if (!(listOfZeros.apply(x).contains(listOfZeros.apply(y).charAt(z)))) {
+                            contains = false
+                        }
+                    }
+                    if (contains) listOfZeros.update(y, "")
                 }
             }
         }
