@@ -61,7 +61,6 @@ class KnowledgeBase(val reason: List[String], val matrix: Matrix, val consequent
 
         //all zeros
         for (x <- 0 until solution.length - 1) {
-            System.out.println((size - x - 1) + " zeros")
             array.update(x, 1)
             set = Program.showPermutations(array)
             for (s <- set) {
@@ -74,7 +73,6 @@ class KnowledgeBase(val reason: List[String], val matrix: Matrix, val consequent
                 if (equationSystem.checkSolution(tmpMinSolution)) {
                     minSolutions.add(tmpMinSolution)
                 }
-                System.out.println(s)
             }
             set.clear()
         }
