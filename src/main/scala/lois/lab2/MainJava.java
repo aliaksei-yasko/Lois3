@@ -16,8 +16,8 @@ import java.util.ArrayList;
 public class MainJava {
 
     public static void main(String[] args) throws IOException {
-        //String fileName = "knowledgeBase/knowledgeBase_2.txt";
-        String fileName = args[0];
+        String fileName = "knowledgeBase/knowledgeBase_2.txt";
+        //String fileName = args[0];
         Parser parser = new Parser(fileName);
         KnowledgeBase knowledgeBase = parser.parse();
         Tuple3<EquationsSystem, float[], ArrayList<float[]>> inferenceResult = knowledgeBase.reverseFuzzyInference();
@@ -32,22 +32,36 @@ public class MainJava {
 
         fileWriter.write("--------------------------- Система уравнений ---------------------\n\n");
         fileWriter.write(equationSystem.toString());
-        fileWriter.write("\n\n--------------------------- Максимальное решение ---------------------\n\n");
-        fileWriter.write(solutionToString(solution, reason));
-        fileWriter.write("\n\n--------------------------- Минимальные решения ---------------------\n\n");
-        for (float[] minSolution : minSolutions) {
-            fileWriter.write(solutionToString(minSolution, reason) + "\n");
-        }
+        fileWriter.write("\n\n--------------------------- Решения ---------------------\n\n");
+        fileWriter.write(solutionsToString(solution, reason, minSolutions));
         fileWriter.close();
     }
 
-    private static String solutionToString(float[] solution, List<String> reason) {
+    private static String solutionsToString(float[] solution, List<String> reason, ArrayList<float[]> minSolutions) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        for (int i = 0; i < solution.length; i++) {
-            stringBuilder.append(reason.apply(i)).append(" = ").append(solution[i]).append("; ");
+        if (minSolutions.size() != 0) {
+            for (float[] sol : minSolutions) {
+                for (int i = 0; i < sol.length; i++) {
+                    if (sol[i] != solution[i]) {
+                        stringBuilder.append(reason.apply(i))
+                                .append(" = ")
+                                .append("[")
+                                .append(sol[i])
+                                .append("; ")
+                                .append(solution[i])
+                                .append("]; ");
+                    } else {
+                        stringBuilder.append(reason.apply(i)).append(" = ").append(solution[i]).append("; ");
+                    }
+                }
+                stringBuilder.append("\n");
+            }
+        } else {
+            for (int i = 0; i < solution.length; i++) {
+                stringBuilder.append(reason.apply(i)).append(" = ").append(solution[i]).append("; ");
+            }
         }
-
         return stringBuilder.toString();
     }
 }
