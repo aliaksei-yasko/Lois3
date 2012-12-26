@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class MainJava {
 
     public static void main(String[] args) throws IOException {
-        String fileName = "knowledgeBase/knowledgeBase_3.txt";
+        String fileName = "knowledgeBase/knowledgeBase_2.txt";
         //String fileName = args[0];
         Parser parser = new Parser(fileName);
         KnowledgeBase knowledgeBase = parser.parse();

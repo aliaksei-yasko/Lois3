@@ -11,6 +11,8 @@ import java.util
  */
 class KnowledgeBase(val reason: List[String], val matrix: Matrix, val consequent: List[Float]) {
 
+    def equationSystem = createEquationSystem(reason, matrix, consequent)
+
     /**
      * Method that execute reverse fuzzy inference.
      *
