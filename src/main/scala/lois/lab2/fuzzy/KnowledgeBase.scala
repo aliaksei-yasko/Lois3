@@ -24,6 +24,7 @@ class KnowledgeBase(val reason: List[String], val matrix: Matrix, val consequent
 
         var minSolution = preSolutionMatrix.inf
         var minSolutions = new java.util.ArrayList[Array[Float]]()
+        var preSolutions = new java.util.ArrayList[Array[Float]]()
 
         //max solution
         if (!equationSystem.checkSolution(solution)) {
@@ -32,95 +33,113 @@ class KnowledgeBase(val reason: List[String], val matrix: Matrix, val consequent
 
         var sss = List[Float]()
         //check maximal solution
-        for (x <- 0 until minSolution.length) {
-            if (minSolution.apply(x) == 1f) {
-                //can be 0? If no -> try to find minimum value from consequent
-                minSolution.update(x, 0f)
-                if (!equationSystem.checkSolution(minSolution)) {
-                    sss = consequent.sortWith((x, y) => x > y)
-                    var tru = true
-                    var lnght = sss.size - 1
-                    while (tru && lnght > -1) {
-                        var number = sss.apply(lnght)
-                        lnght = lnght - 1
-                        minSolution.update(x, number)
-                        if (equationSystem.checkSolution(minSolution)) {
-                            tru = false
+        for (r <- 0 until minSolution.length) {
+            minSolution = preSolutionMatrix.inf
+            if (minSolution.apply(r) == 1f) {
+                minSolution.update(r, 0f)
+            }
+            for (x <- 0 until minSolution.length) {
+                if (minSolution.apply(x) == 1f || minSolution(x) == 0f) {
+                    //can be 0? If no -> try to find minimum value from consequent
+                    minSolution.update(x, 0f)
+                    if (!equationSystem.checkSolution(minSolution)) {
+                        sss = consequent.sortWith((x, y) => x > y)
+                        var tru = true
+                        var lnght = sss.size - 1
+                        while (tru && lnght > -1) {
+                            var number = sss.apply(lnght)
+                            lnght = lnght - 1
+                            minSolution.update(x, number)
+                            if (equationSystem.checkSolution(minSolution)) {
+                                tru = false
+                            }
+                        }
+                        if (tru == true) {
+                            minSolution.update(x, 1f)
                         }
                     }
-                    if (tru == true) {
-                        minSolution.update(x, 1f)
-                    }
                 }
+                preSolutions.add(minSolution)
             }
         }
-
-        //combine all possible solutions with 0
-        var size = solution.length
-        val array: Array[Int] = Array.fill[Int](size)(0)
-        var set: java.util.Set[String] = null
-
-        //all zeros
-        for (x <- 0 until solution.length - 1) {
-            array.update(x, 1)
-            set = Program.showPermutations(array)
-            for (s <- set) {
-                var tmpMinSolution = minSolution.clone()
-                for (x <- 0 until s.length) {
-                    if (s.charAt(x).equals('0')) {
-                        tmpMinSolution.update(x, 0)
-                    }
-                }
-                if (equationSystem.checkSolution(tmpMinSolution)) {
-                    minSolutions.add(tmpMinSolution)
-                }
-            }
-            set.clear()
-        }
-
-        //contains positions of 0 in solutions
-        var listOfZeros: Array[String] = Array.fill[String](minSolutions.size())("")
-
-        //filter minimal solutions
-        for (x <- 0 until minSolutions.size()) {
-            var oneSolution = minSolutions.apply(x)
-            for (y <- 0 until oneSolution.length) {
-                if (oneSolution.apply(y) == 0) {
-                    listOfZeros.update(x, listOfZeros.apply(x) + y)
-                }
-            }
-        }
-
-        var contains = true
-        for (x <- 0 until listOfZeros.length) {
-            for (y <- 0 until listOfZeros.length) {
-                var contains = true
-                if (listOfZeros.apply(x) != -1 && listOfZeros.apply(y) != -1 && x != y) {
-                    for (z <- 0 until listOfZeros.apply(y).size) {
-                        if (!(listOfZeros.apply(x).contains(listOfZeros.apply(y).charAt(z)))) {
-                            contains = false
-                        }
-                    }
-                    if (contains) listOfZeros.update(y, "")
-                }
-            }
-        }
-
         var finalMinSolutions = new java.util.ArrayList[Array[Float]]()
-        for (x <- 0 until listOfZeros.length) {
-            if (listOfZeros.apply(x) != "") {
-                finalMinSolutions.add(minSolutions.apply(x))
+        for (c <- 0 until preSolutions.length) {
+            //combine all possible solutions with 0
+            var size = solution.length
+            val array: Array[Int] = Array.fill[Int](size)(0)
+            var set: java.util.Set[String] = null
+
+            //all zeros
+            for (x <- 0 until solution.length - 1) {
+                array.update(x, 1)
+                set = Program.showPermutations(array)
+                for (s <- set) {
+                    var tmpMinSolution = preSolutions(c).clone()
+                    for (x <- 0 until s.length) {
+                        if (s.charAt(x).equals('0')) {
+                            tmpMinSolution.update(x, 0)
+                        }
+                    }
+                    if (equationSystem.checkSolution(tmpMinSolution)) {
+                        minSolutions.add(tmpMinSolution)
+                    }
+                }
+                set.clear()
+            }
+
+            //contains positions of 0 in solutions
+            var listOfZeros: Array[String] = Array.fill[String](minSolutions.size())("")
+
+            //filter minimal solutions
+            for (x <- 0 until minSolutions.size()) {
+                var oneSolution = minSolutions.apply(x)
+                for (y <- 0 until oneSolution.length) {
+                    if (oneSolution.apply(y) == 0) {
+                        listOfZeros.update(x, listOfZeros.apply(x) + y)
+                    }
+                }
+            }
+
+            var contains = true
+            for (x <- 0 until listOfZeros.length) {
+                for (y <- 0 until listOfZeros.length) {
+                    var contains = true
+                    if (listOfZeros.apply(x) != -1 && listOfZeros.apply(y) != -1 && x != y) {
+                        for (z <- 0 until listOfZeros.apply(y).size) {
+                            if (!(listOfZeros.apply(x).contains(listOfZeros.apply(y).charAt(z)))) {
+                                contains = false
+                            }
+                        }
+                        if (contains) listOfZeros.update(y, "")
+                    }
+                }
+            }
+
+
+            for (x <- 0 until listOfZeros.length) {
+                if (listOfZeros.apply(x) != "") {
+                    finalMinSolutions.add(minSolutions.apply(x))
+                }
             }
         }
 
-        (equationSystem, solution, finalMinSolutions)
+        var resultSet: util.Set[Array[Float]] = new util.HashSet[Array[Float]]()
+        for (x <- 0 until finalMinSolutions.size()) {
+            resultSet.add(finalMinSolutions(x))
+        }
+
+
+
+        (equationSystem, solution, new util.ArrayList[Array[Float]](resultSet.toList) )
     }
 
     private def createEquationSystem(reason: List[String], matrix: Matrix, consequent: List[Float]): EquationsSystem = {
 
         val equations = Array.ofDim[Equation](matrix.height)
         for (i <- 0 until matrix.height) {
-            val equationElements = for (j <- 0 until matrix.width) yield (reason(j), matrix.getValue(i, j))
+            val equationElements = for (j <- 0 until matrix.width) yield {
+                (reason(j), matrix.getValue(i, j))
+            }
             equations(i) = new Equation(consequent(i), equationElements.toList)
         }
 
