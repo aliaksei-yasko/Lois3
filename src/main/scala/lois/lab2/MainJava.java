@@ -16,8 +16,8 @@ import java.util.ArrayList;
 public class MainJava {
 
     public static void main(String[] args) throws IOException {
-        String fileName = "knowledgeBase/knowledgeBase_2.txt";
-        //String fileName = args[0];
+        //String fileName = "knowledgeBase/knowledgeBase_2.txt";
+        String fileName = args[0];
         Parser parser = new Parser(fileName);
         KnowledgeBase knowledgeBase = parser.parse();
         Tuple3<EquationsSystem, float[], ArrayList<float[]>> inferenceResult = knowledgeBase.reverseFuzzyInference();
@@ -32,7 +32,7 @@ public class MainJava {
 
         fileWriter.write("--------------------------- Система уравнений ---------------------\n\n");
         fileWriter.write(equationSystem.toString());
-        fileWriter.write("\n\n--------------------------- Решение ---------------------\n\n");
+        fileWriter.write("\n\n--------------------------- Максимальное решение ---------------------\n\n");
         fileWriter.write(solutionToString(solution, reason));
         fileWriter.write("\n\n--------------------------- Минимальные решения ---------------------\n\n");
         for (float[] minSolution : minSolutions) {
